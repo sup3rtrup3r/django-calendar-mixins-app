@@ -1,0 +1,54 @@
+{% extends 'app/base.html' %}
+{% block content %}
+    <style>
+        table {
+            table-layout: fixed;
+        }
+
+    </style>
+
+    <a href="{% url 'app:month_with_forms' month_previous.year month_previous.month %}">last month</a>
+    {{ month_current | date:"Y m" }}
+    <a href="{% url 'app:month_with_forms' month_next.year month_next.month %}">next month</a>
+
+    <form action="" method="POST">
+        {{ month_formset.management_form }}
+        <table class="table">
+            <thead>
+            <tr>
+                {% for w in week_names %}
+                    <th>{{ w }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for week_day_forms in month_day_forms %}
+                <tr>
+                    {% for day, forms in week_day_forms.items %}
+                        {% if now == day %}
+                            <td class="table-success">
+                                {% else %}
+                            <td>
+                        {% endif %}
+
+                    <div>
+                        {% if month_current.month != day.month %}
+                            {{ day | date:"m/d" }}
+                        {% else %}
+                            {{ day.day }}
+                        {% endif %}
+
+                        {% for form in forms %}
+                            {{ form.as_p }}
+                        {% endfor %}
+                    </div>
+                    </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+{% endblock %}
